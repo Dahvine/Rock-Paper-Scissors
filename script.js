@@ -1,95 +1,55 @@
-const choices= ["rock","paper","scissors"];
-const winners = [];
+let playerScore = 0
+let computerScore = 0
+const buttons = document.querySelectorAll('input')
 
-function game(){
-    for( let i= 0; i<=5; i++){
-        playRound(i);
-    }
-    document.querySelector("button").textContent= "play new game"
-    logwins();
+function computerPlay() {
+    let choices = ['rock', 'paper', 'scissors']
+    return choices[Math.floor(Math.random() * choices.length)]
 }
 
-function playRound(round){
-    const playerSelection = playerChoice();
-    const computerSelection = computerChoice();
-    const winner = checkWinner(playerSelection, computerSelection);
-    winners.push(winner);
-    logRound(playerSelection, computerSelection, winner, round) 
+function disableButtons() {
+    buttons.forEach(elem => {
+        elem.disabled = true
+    })
 }
 
-function playerChoice(){
-    let input= prompt("Choose either Rock, Paper or Scissors");
-    while(input == null){
-     input = prompt("Choose either rock, paper or scissors");
+function playRound(playerSelection) {
+    let computerSelection = computerPlay()
+    let result = ""
+
+    if ((playerSelection == 'rock' && computerSelection == 'scissors') ||
+        (playerSelection == 'scissors' && computerSelection == 'paper') ||
+        (playerSelection == 'paper' && computerSelection == 'rock')) {
+        
+        playerScore += 1
+        result = ('You win! ' + playerSelection + ' beats ' + computerSelection
+            + "<br><br>Player score: " + playerScore + "<br>Computer score: " + computerScore)
+
+        if (playerScore == 5) {
+            result += '<br><br>You won the game! Reload the page to play again'
+            disableButtons()
+}    }
+    else if (playerSelection == computerSelection) {
+        result = ('It\'s a tie. You both chose ' + playerSelection
+            + "<br><br>Player score: " + playerScore + "<br>Computer score: " + computerScore)
     }
-        input = input.toLowerCase();
-        let check = validateInput(input);
-        while (check == false) {
-            input = prompt("Type Rock, Paper, or Scissors. Spellings should be noted while giving input"
-            );
-            while(input == null){
-                input = prompt("Choose either rock, paper or scissors");
-               }
-            input = input.toLowerCase();
-            check = validateInput(input);
+    else {
+        computerScore += 1
+        result = ('You lose! ' + computerSelection + ' beats ' + playerSelection
+            + "<br><br>Player score: " + playerScore + "<br>Computer score: " + computerScore)
+
+        if (computerScore == 5) {
+            result += '<br><br>I won the game! Reload the page to play again'
+            disableButtons()
         }
-        return input;
-}
-
-function computerChoice(){
-    return choices[Math.floor(Math.random()*choices.length)];
-}
-
-function validateInput(choice){
-   return choices.includes(choice);
-
-}
-
-function checkWinner(choiceP, choiceC){
-    if (choiceP === choiceC){
-        return "Tie";
-    } else if((choiceP === "rock" && choiceC == "scissors") ||
-    (choiceP === "paper" && choiceC == "rock") ||
-    (choiceP === "scissors" && choiceC == "paper")
-    ){
-        return "Player";
     }
-    else{
-        return "Computer";
-    }
+
+    document.getElementById('result').innerHTML = result
+    return
 }
 
-function logwins(){
-    let playerwins= winners.filter((item) => item == "Player").length;
-    let computerwins = winners.filter ((item) => item == "Computer").length;
-    let ties = winners.filter((item)=> item == "Tie").length;
-    console.log("Results:");
-    console.log ("Player wins:",playerwins);
-    console.log("Computer wins:",computerwins);
-    console.log("Tie:",ties);
-}
-
-function logRound(playerChoice, computerChoice, winner, round){
-    console.log("round:", round)
-    console.log("Player choice:", playerChoice)
-    console.log("Computer choice:", computerChoice)
-    console.log(winner, "won the round")
-    console.log("----------------")
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+buttons.forEach(button =>{
+    button.addEventListener('click', function(){
+        playRound(button.value)
+    })
+})
